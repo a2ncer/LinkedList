@@ -1,5 +1,7 @@
 # LinkedList implementation in C#
 
+![.NET Core](https://github.com/a2ncer/LinkedList/workflows/.NET%20Core/badge.svg?branch=master)
+
 ## Requirements
 
 It was required to implement linked list that had the following basic interface and features:
