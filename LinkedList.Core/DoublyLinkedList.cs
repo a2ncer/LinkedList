@@ -3,14 +3,14 @@
 namespace LinkedList.Core
 {
     /// <summary>
-    /// Defines the <see cref="SinglyLinkedList{T}" />.
-    /// Implementation of singly linked list.
+    /// Defines the <see cref="DoublyLinkedList{T}" />.
+    /// Implementation of doubly linked list.
     /// </summary>
     /// <typeparam name="T">.</typeparam>
-    public class SinglyLinkedList<T> : ILinkedList<T>
+    public class DoublyLinkedList<T> : ILinkedList<T>
     {
-        private SinglyLinkedListNode<T> _head;
-        private SinglyLinkedListNode<T> _tail;
+        private DoublyLinkedListNode<T> _head;
+        private DoublyLinkedListNode<T> _tail;
         /// <summary>
         /// Returns the array of values.
         /// </summary>
@@ -44,7 +44,7 @@ namespace LinkedList.Core
         /// <returns>The <see cref="INode{T}"/>.</returns>
         public INode<T> AddLast(T value)
         {
-            var newitem = new SinglyLinkedListNode<T>
+            var newitem = new DoublyLinkedListNode<T>
             {
                 Value = value
             };
@@ -60,12 +60,13 @@ namespace LinkedList.Core
             {
                 _tail = newitem;
                 _head.Next = _tail;
+                _tail.Prev = _head;
 
                 return newitem;
             }
 
             _tail.Next = newitem;
-
+            newitem.Prev = _tail;
             _tail = newitem;
 
             return newitem;
@@ -78,9 +79,7 @@ namespace LinkedList.Core
         /// <returns>The <see cref="INode{T}"/>.</returns>
         public INode<T> Find(T value)
         {
-            var (_, target) = FindWithBeforeNode(value);
-
-            return target;
+            return InternalFind(value);
         }
 
         /// <summary>
@@ -90,60 +89,66 @@ namespace LinkedList.Core
         /// <returns>The <see cref="bool"/>.</returns>
         public bool Remove(T value)
         {
-            var (before, target) = FindWithBeforeNode(value);
+            var current = InternalFind(value);
 
-            if (target == null)
+            if (current == null)
             {
                 return false;
             }
 
-            _tail = target.Next == null ? before : _tail;
+            var prev = current.Prev;
+            var next = current.Next;
 
-            if (before == null)
+            if (prev != null)
             {
-                _head = target.Next;
-
-                return true;
+                prev.Next = next;
+            }
+            else
+            {
+                _head = next;
             }
 
-            before.Next = target.Next;
+            if (next != null)
+            {
+                next.Prev = prev;
+            }
+            else
+            {
+                _tail = prev;
+            }
 
             return true;
         }
 
-        private (SinglyLinkedListNode<T> before, SinglyLinkedListNode<T> target) FindWithBeforeNode(T value)
+        private DoublyLinkedListNode<T> InternalFind(T value)
         {
-            if (_head == null || value == null)
+            if (_head == null)
             {
-                return (null, null);
+                return null;
             }
 
             var current = _head;
-            SinglyLinkedListNode<T> before = null;
             var comparer = EqualityComparer<T>.Default;
-
             do
             {
                 if (comparer.Equals(current.Value, value))
                 {
-                    return (before, current);
+                    return current;
                 }
-
-                before = current;
                 current = current.Next;
+            }
+            while (current != null);
 
-            } while (current != null);
-
-            return (null, null);
+            return null;
         }
     }
 
     /// <summary>
-    /// Defines the <see cref="SinglyLinkedListNode{T}" />.
-    /// Internal node for singly linked list.
+    /// Defines the <see cref="DoublyLinkedListNode{T}" />.
+    /// Internal node for doubly linked list.
     /// </summary>
     /// <typeparam name="T">.</typeparam>
-    internal sealed class SinglyLinkedListNode<T> : INode<T>
+    internal sealed class DoublyLinkedListNode<T> : INode<T>
     {
         /// <summary>
         /// Gets or sets the Value.
@@ -153,6 +158,11 @@ namespace LinkedList.Core
         /// <summary>
         /// Gets or sets the next node.
         /// </summary>
-        internal SinglyLinkedListNode<T> Next { get; set; }
+        internal DoublyLinkedListNode<T> Next { get; set; }
+
+        /// <summary>
+        /// Gets or sets the previous node.
+        /// </summary>
+        internal DoublyLinkedListNode<T> Prev { get; set; }
     }
 }

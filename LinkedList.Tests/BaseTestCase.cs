@@ -147,6 +147,20 @@ namespace LinkedList.Tests
 
             Assert.True(actual);
             Assert.Equal(new string[] { }, linkedList.Values);
+
+            linkedList.AddLast("one");
+            linkedList.AddLast("two");
+            linkedList.AddLast("three");
+
+            actual = linkedList.Remove("three");
+
+            Assert.True(actual);
+            Assert.Equal(new string[] { "one", "two" }, linkedList.Values);
+
+            linkedList.AddLast("three");
+
+            Assert.True(actual);
+            Assert.Equal(new string[] { "one", "two", "three" }, linkedList.Values);
         }
     }
 }
